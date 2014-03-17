@@ -122,7 +122,8 @@ object ScalaSigEntryParsers extends RulesWithState with MemoisableRules {
     rule(entry.byteCode) mapOut (entry setByteCode _)
   }
 
-  def toEntry[A](index : Int) = apply { sigEntry => ScalaSigParsers.entry(index)(sigEntry.scalaSig) }
+  def toEntry[A](index : Int) = apply { sigEntry =>
+    ScalaSigParsers.entry(index)(sigEntry.scalaSig) }
 
   def parseEntry[A](parser : EntryParser[A])(index : Int) = (toEntry(index) -~ parser)
 
@@ -236,14 +237,19 @@ object ScalaSigEntryParsers extends RulesWithState with MemoisableRules {
       19 -~ symbolRef ~ (typeRef*) ^~^ ClassInfoType,
       20 -~ typeRef ~ (symbolRef*) ^~^ MethodType,
       21 -~ typeRef ~ (refTo(typeSymbol)*) ^~^ PolyType,
+      // TODO: make future safe for past by doing the same transformation as in the
+      // full unpickler in case we're reading pre-2.9 classfiles
+      entryType(21) -~ typeRef ^^ NullaryMethodType,
       22 -~ typeRef ~ (symbolRef*) ^~^ ImplicitMethodType,
       42 -~ typeRef ~ (attribTreeRef*) ^~^ AnnotatedType,
       51 -~ typeRef ~ symbolRef ~ (attribTreeRef*) ^~~^ AnnotatedWithSelfType,
       47 -~ typeLevel ~ typeIndex ^~^ DeBruijnIndexType,
-      48 -~ typeRef ~ (symbolRef*) ^~^ ExistentialType) as "type"
+      48 -~ typeRef ~ (symbolRef*) ^~^ ExistentialType,
+      52 -~ typeRef ~ typeRef ^~^ SuperType) as "type"
+
 
   lazy val literal = oneOf(
-      24 -^ (),
+      24 -^ (()),
       25 -~ longValue ^^ (_ != 0L),
       26 -~ longValue ^^ (_.toByte),
       27 -~ longValue ^^ (_.toShort),
@@ -254,7 +260,8 @@ object ScalaSigEntryParsers extends RulesWithState with MemoisableRules {
       32 -~ longValue ^^ (java.lang.Double.longBitsToDouble),
       33 -~ nameRef,
       34 -^ null,
-      35 -~ typeRef)
+      35 -~ typeRef,
+      36 -~ symbolRef)
 
   lazy val attributeInfo = 40 -~ symbolRef ~ typeRef ~ (constantRef?) ~ (nameRef ~ constantRef *) ^~~~^ AttributeInfo // sym_Ref info_Ref {constant_Ref} {nameRef constantRef}
   lazy val children = 41 -~ (nat*) ^^ Children //sym_Ref {sym_Ref}

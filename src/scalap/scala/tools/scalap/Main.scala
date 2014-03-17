@@ -15,7 +15,7 @@ import tools.nsc.util.{ ClassPath }
 import tools.util.PathResolver
 import ClassPath.DefaultJavaContext
 import tools.nsc.io.{PlainFile, AbstractFile}
-import scala.reflect.generic.ByteCodecs
+import scala.reflect.internal.pickling.ByteCodecs
 
 /**The main object used to execute scalap on the command-line.
  *
@@ -79,13 +79,13 @@ object Main {
       case Some(p) if (p.name != "<empty>") => {
         val path = p.path
         if (!isPackageObject) {
-          stream.print("package ");
-          stream.print(path);
+          stream.print("package ")
+          stream.print(path)
           stream.print("\n")
         } else {
           val i = path.lastIndexOf(".")
           if (i > 0) {
-            stream.print("package ");
+            stream.print("package ")
             stream.print(path.substring(0, i))
             stream.print("\n")
           }
@@ -133,7 +133,7 @@ object Main {
    * @param path...
    * @param classname...
    */
-  def process(args: Arguments, path: ClassPath[AbstractFile])(classname: String): Unit = {
+  def process(args: Arguments, path: ClassPath[AbstractFile])(classname: String) {
     // find the classfile
     val encName = Names.encode(
       if (classname == "scala.AnyRef") "java.lang.Object"
@@ -263,7 +263,7 @@ object Main {
               .withOption("-help")
               .withOptionalArg("-classpath")
               .withOptionalArg("-cp")
-              .parse(args);
+              .parse(args)
       if (arguments contains "-version")
         Console.println(versionMsg)
       if (arguments contains "-help")
@@ -290,8 +290,8 @@ object Main {
     def asURLs = Nil
     def asClasspathString = ""
     val context = DefaultJavaContext
-    val classes: List[ClassRep] = Nil
-    val packages: List[ClassPath[AbstractFile]] = Nil
-    val sourcepaths: List[AbstractFile] = Nil
+    val classes: IndexedSeq[AnyClassRep] = IndexedSeq.empty
+    val packages: IndexedSeq[ClassPath[AbstractFile]] = IndexedSeq.empty
+    val sourcepaths: IndexedSeq[AbstractFile] = IndexedSeq.empty
   }
 }

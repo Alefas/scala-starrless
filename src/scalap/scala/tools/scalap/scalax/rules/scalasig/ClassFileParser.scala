@@ -65,8 +65,9 @@ class ByteCode(val bytes : Array[Byte], val pos : Int, val length : Int) {
    * stores and array of bytes for the decompiler
    */
   def toUTF8StringAndBytes = {
-    val chunk: Array[Byte] = bytes drop pos take length
-    StringBytesPair(io.Codec.toUTF8(chunk).mkString, chunk)
+    val chunk: Array[Byte] = new Array[Byte](length)
+    System.arraycopy(bytes, pos, chunk, 0, length)
+    StringBytesPair(io.Codec.fromUTF8(chunk).mkString, chunk)
   }
 
   def byte(i : Int) = bytes(pos) & 0xFF
@@ -163,7 +164,7 @@ object ClassFileParser extends ByteCodeReader {
   val methods = u2 >> method.times
   
   val header = magicNumber -~ u2 ~ u2 ~ constantPool ~ u2 ~ u2 ~ u2 ~ interfaces ^~~~~~~^ ClassFileHeader
-  val classFile = header ~ fields ~ methods ~ attributes ~- !u1 ^~~~^ ClassFile 
+  val classFile = header ~ fields ~ methods ~ attributes ~- !u1 ^~~~^ ClassFile
 
   // TODO create a useful object, not just a string
   def memberRef(description : String) = u2 ~ u2 ^^ add1 {
