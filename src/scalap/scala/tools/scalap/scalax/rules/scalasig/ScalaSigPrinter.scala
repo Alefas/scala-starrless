@@ -11,15 +11,13 @@ package scalax
 package rules
 package scalasig
 
-import java.io.{PrintStream, ByteArrayOutputStream}
+import java.io.{ByteArrayOutputStream, PrintStream}
 import java.util.regex.Pattern
 
-import scala.tools.scalap.scalax.util.StringUtil
-import reflect.NameTransformer
-import java.lang.String
-import tools.nsc.ast.parser.Tokens
-import scala.annotation.{tailrec, switch}
+import scala.annotation.{switch, tailrec}
 import scala.collection.mutable
+import scala.reflect.NameTransformer
+import scala.tools.scalap.scalax.util.StringUtil
 
 sealed abstract class Verbosity
 case object ShowAll extends Verbosity
@@ -731,7 +729,7 @@ class ScalaSigPrinter(stream: PrintStream, verbosity: Verbosity) {
         } else false
       }
       val result = NameTransformer.decode(name)
-      if (!isIdentifier(result) || keywordList.contains(result)) "`" + result + "`" else result
+      if (!isIdentifier(result) || keywordList.contains(result) || result == "=") "`" + result + "`" else result
     }
     val stripped = stripPrivatePrefix(name)
     val m = pattern.matcher(stripped)
