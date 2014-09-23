@@ -356,10 +356,10 @@ class ScalaSigPrinter(stream: PrintStream, verbosity: Verbosity) {
 
       // Print result type
       mt.resultType match {
-        case mt: MethodType => printMethodType(mt, printResult)({})
-        case imt: ImplicitMethodType => printMethodType(imt, printResult)({})
+        case mt: MethodType => printMethodType(mt, printResult, pe)({})
+        case imt: ImplicitMethodType => printMethodType(imt, printResult, pe)({})
         case x => if (printResult) {
-          print(" : ");
+          print(" : ")
           printType(x)
         }
       }
