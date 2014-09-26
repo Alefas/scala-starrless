@@ -78,7 +78,7 @@ class ScalaSigPrinter(stream: PrintStream, verbosity: Verbosity) {
     val shouldPrint = {
       val accessibilityOk = verbosity match {
         case ShowAll => true
-        case HideClassPrivate => !symbol.isPrivate || symbol.isInstanceOf[AliasSymbol]
+        case HideClassPrivate => !symbol.isPrivate || symbol.isInstanceOf[AliasSymbol] || level == 0
         case HideInstancePrivate => !symbol.isLocal || symbol.isInstanceOf[AliasSymbol]
       }
       val paramAccessor = symbol match {
