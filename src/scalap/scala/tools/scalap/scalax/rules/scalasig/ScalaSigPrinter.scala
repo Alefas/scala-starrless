@@ -498,9 +498,8 @@ class ScalaSigPrinter(stream: PrintStream, verbosity: Verbosity) {
 
     // print type itself
     t match {
-      case ThisType(symbol) => {
-        sep + processName(symbol.name) + ".this.type"
-      }
+      case ThisType(classSymbol: ClassSymbol) if refinementClass(classSymbol) => sep + "this.type"
+      case ThisType(symbol) => sep + processName(symbol.name) + ".this.type"
       case SingleType(ThisType(thisSymbol: ClassSymbol), symbol) =>
         val thisSymbolName: String =
           thisSymbol.name match {
@@ -580,6 +579,7 @@ class ScalaSigPrinter(stream: PrintStream, verbosity: Verbosity) {
           val prefixStr = (prefix, symbol, toString(prefix)) match {
             case (NoPrefixType, _, _) => ""
             case (ThisType(packSymbol), _, _) if !packSymbol.isType => processName(packSymbol.path) + "."
+            case (ThisType(classSymbol: ClassSymbol), _, _) if refinementClass(classSymbol) => ""
             case (ThisType(typeSymbol: ClassSymbol), ExternalSymbol(_, Some(parent), _), _)
               if typeSymbol.path != parent.path && checkContainsSelf(typeSymbol.selfType, parent) =>
               processName(typeSymbol.name) + ".this."
