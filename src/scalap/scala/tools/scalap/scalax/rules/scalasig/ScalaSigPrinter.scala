@@ -578,7 +578,10 @@ class ScalaSigPrinter(stream: PrintStream, verbosity: Verbosity) {
           }
           val prefixStr = (prefix, symbol, toString(prefix)) match {
             case (NoPrefixType, _, _) => ""
-            case (ThisType(packSymbol), _, _) if !packSymbol.isType => processName(packSymbol.path) + "."
+            case (ThisType(objectSymbol), _, _) if objectSymbol.isModule && !objectSymbol.isStable =>
+              processName(objectSymbol.name) + "."
+            case (ThisType(packSymbol), _, _) if !packSymbol.isType =>
+              processName(packSymbol.path) + "."
             case (ThisType(classSymbol: ClassSymbol), _, _) if refinementClass(classSymbol) => ""
             case (ThisType(typeSymbol: ClassSymbol), ExternalSymbol(_, Some(parent), _), _)
               if typeSymbol.path != parent.path && checkContainsSelf(typeSymbol.selfType, parent) =>

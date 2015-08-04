@@ -288,9 +288,10 @@ object Main {
      */
     def name: String = ""
     def asURLs = Nil
-    def asClasspathString = ""
+    override def asClasspathString = ""
+    override def asClassPathString: String = ""
     val context = DefaultJavaContext
-    val classes: IndexedSeq[AnyClassRep] = IndexedSeq.empty
+    val classes: IndexedSeq[ClassPath[AbstractFile]#ClassRep] = IndexedSeq.empty
     val packages: IndexedSeq[ClassPath[AbstractFile]] = IndexedSeq.empty
     val sourcepaths: IndexedSeq[AbstractFile] = IndexedSeq.empty
   }
