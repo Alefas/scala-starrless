@@ -125,9 +125,9 @@ object ClassFileParser extends ByteCodeReader {
   val methodRef = memberRef("Method")
   val interfaceMethodRef = memberRef("InterfaceMethod")
   val nameAndType = u2 ~ u2 ^^ add1 { case name ~ descriptor => pool => "NameAndType: " + pool(name) + ", " + pool(descriptor) }
-  val methodHandle = u1 ~ u2 ^^ add2 { raw => pool => "MethodHandle: TODO" }
-  val methodType = u2 ^^ add2 { raw => pool => "MethodType: TODO" }
-  val invokeDynamic = u2 ~ u2 ^^ add2 { raw => pool => "InvokeDynamic: TODO" }
+  val methodHandle = u1 ~ u2 ^^ add1 { case refKind ~ refIndex => pool => "MethodHandle: " + pool(refIndex) }
+  val methodType = u2 ^^ add1 { case descriptorIndex => pool => "MethodType: " + pool(descriptorIndex) }
+  val invokeDynamic = u2 ~ u2 ^^ add1 { case bootstrapMethodIndex ~ nameAndTypeIndex => pool => "InvokeDynamic: " + pool(bootstrapMethodIndex) + ", " + pool(nameAndTypeIndex) }
 
   val constantPoolEntry = u1 >> {
     case 1 => utf8String
